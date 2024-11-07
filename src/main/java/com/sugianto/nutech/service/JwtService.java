@@ -1,6 +1,7 @@
 package com.sugianto.nutech.service;
 
 import com.sugianto.nutech.config.AppConfig;
+import com.sugianto.nutech.exception.UnauthorizedException;
 import com.sugianto.nutech.repository.AppUserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -57,8 +58,12 @@ public class JwtService {
     }
 
     public boolean isExpired(String jwt) {
-        Claims claims = getClaims(jwt);
-        return claims.getExpiration().before(Date.from(Instant.now()));
+        try {
+            Claims claims = getClaims(jwt);
+            return claims.getExpiration().before(Date.from(Instant.now()));
+        } catch (Exception e) {
+            throw new UnauthorizedException("Token tidak valid atau kadaluwarsa");
+        }
     }
 
 }
